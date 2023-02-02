@@ -1,0 +1,75 @@
+{
+        "inputs":{
+                "iso": "ercot",
+                "bucketname" : "s3://us-ercot/" 
+
+        },
+        "dam" : {
+                "reportid":"",
+                "reportname":"",
+                "functions":{
+                        "datetimeCombineErcot" : {
+                                "dateCol":"DeliveryDate",
+                                "hourCol" :"HourEnding",
+                                "format":"%m/%d/%Y",
+                                "timezone":"US/Central"
+                                },
+                        "dropCol" : ["DSTFlag"],
+                        "renameCol" : {
+                                "DeliveryDate" : "date",
+                                "SettlementPoint" : "node",
+                                "SettlementPointPrice" : "px_da"}
+                        }
+        },
+        "ancillary":{
+                "reportid":"",
+                "reportname":"",
+                "functions":{
+                        "datetimeCombineErcot" : {
+                                "dateCol":"DeliveryDate",
+                                "hourCol" :"HourEnding",
+                                "format":"%m/%d/%Y",
+                                "timezone":"US/Central"
+                                },
+                        "pivot" : {
+                                "values" : ["MCPC"],
+                                "index" : ["DeliveryDate","DSTFlag"],
+                                "columns" : ["AncillaryType"]},
+                        "dropCol" : ["DSTFlag"],
+                        "renameCol" : {
+                                "DeliveryDate" : "date",
+                                "RRS" : "px_spin",
+                                "REGUP" : "px_up",
+                                "REGDN" : "px_down",
+                                "NSPIN" : "px_nospin"}
+                        }
+        },
+        "rtm" : {
+                "reportid":"",
+                "reportname":"",
+                "functions":{
+                        "datetimeConvert" :{
+                                "timezone":"US/Central",
+                                "format":"%m/%d/%Y %H:%M:%S",
+                                "col":"SCEDTimestamp"
+                            },
+                        "dropCol" : ["RepeatedHourFlag"],
+                        "renameCol" : {
+                                "SCEDTimestamp" : "date",
+                                "SettlementPoint" : "node",
+                                "LMP" : "px_rt"}
+                        }
+        },
+        
+        "output":{
+                "resample":{
+                        "freq":"H",
+                        "function":"mean",
+                        "timezone":"US/Central",
+                        "format":"%m/%d/%Y %H:%M:%S",
+                        "on": "SCEDTimestamp"}
+                
+        }
+
+}
+
