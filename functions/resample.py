@@ -22,15 +22,8 @@ params ={
 
 def resample(df,params):
     grp_cols = [x for x in df.columns if df[x].dtype == "O" and x!=params["on"]]
-    if df.index.dtype == "datetime64[ns, UTC]":
-        index= df.index.name
-        df = df.groupby(grp_cols).resample(params["freq"]).aggregate(params["function"], numeric_only = True)
-        df.reset_index(inplace=True)
-        df.set_index(index, inplace=True)
-    else:
-        df[params["on"]] = pd.to_datetime(df[params["on"]], format = params["format"]).dt.tz_localize(params["timezone"], ambiguous=True)
-        df = df.groupby(grp_cols).resample(params["freq"], on=params["on"]).aggregate(params["function"], numeric_only = True)
-        df.reset_index(inplace=True)
+    df = df.groupby(grp_cols).resample(params["freq"], on=params["on"]).aggregate(params["function"], numeric_only = True)
+    df.reset_index(inplace=True)
     return df
 
 

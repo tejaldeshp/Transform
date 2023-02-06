@@ -5,31 +5,34 @@
 
         },
         "dam" : {
-                "reportid":"",
-                "reportname":"",
+                "reportfolder":"00012331",
+                "node":"SettlementPoint",
                 "functions":{
                         "datetimeCombineErcot" : {
                                 "dateCol":"DeliveryDate",
                                 "hourCol" :"HourEnding",
                                 "format":"%m/%d/%Y",
-                                "timezone":"US/Central"
+                                "timezone":"US/Central",
+                                "hour_replace":":00",
+                                "minCol":0
                                 },
                         "dropCol" : ["DSTFlag"],
                         "renameCol" : {
-                                "DeliveryDate" : "date",
+                                "DeliveryDate" : "Date",
                                 "SettlementPoint" : "node",
                                 "SettlementPointPrice" : "px_da"}
                         }
         },
         "ancillary":{
-                "reportid":"",
-                "reportname":"",
+                "reportfolder":"00012329",
                 "functions":{
                         "datetimeCombineErcot" : {
                                 "dateCol":"DeliveryDate",
                                 "hourCol" :"HourEnding",
                                 "format":"%m/%d/%Y",
-                                "timezone":"US/Central"
+                                "timezone":"US/Central",
+                                "hour_replace":":00",
+                                "minCol":0
                                 },
                         "pivot" : {
                                 "values" : ["MCPC"],
@@ -37,7 +40,7 @@
                                 "columns" : ["AncillaryType"]},
                         "dropCol" : ["DSTFlag"],
                         "renameCol" : {
-                                "DeliveryDate" : "date",
+                                "DeliveryDate" : "Date",
                                 "RRS" : "px_spin",
                                 "REGUP" : "px_up",
                                 "REGDN" : "px_down",
@@ -45,29 +48,34 @@
                         }
         },
         "rtm" : {
-                "reportid":"",
-                "reportname":"",
+                "reportfolder":"00012301",
+                "node":"SettlementPointName",
                 "functions":{
-                        "datetimeConvert" :{
+                        "datetimeCombineErcot" :{
+                                "dateCol":"DeliveryDate",
+                                "hourCol" :"DeliveryHour",
+                                "minCol" :"DeliveryInterval",
+                                "format":"%m/%d/%Y",
                                 "timezone":"US/Central",
-                                "format":"%m/%d/%Y %H:%M:%S",
-                                "col":"SCEDTimestamp"
-                            },
-                        "dropCol" : ["RepeatedHourFlag"],
+                                "hour_replace":""
+                                },
+                        "dropCol" : ["DSTFlag","SettlementPointType"],
                         "renameCol" : {
-                                "SCEDTimestamp" : "date",
-                                "SettlementPoint" : "node",
-                                "LMP" : "px_rt"}
+                                "DeliveryDate" : "Date",
+                                "SettlementPointName" : "node",
+                                "SettlementPointPrice" : "px_rt"}
                         }
         },
         
         "output":{
-                "resample":{
-                        "freq":"H",
-                        "function":"mean",
-                        "timezone":"US/Central",
-                        "format":"%m/%d/%Y %H:%M:%S",
-                        "on": "SCEDTimestamp"}
+                "functions":{
+                        "resample":{
+                                "freq":"H",
+                                "function":"mean",
+                                "timezone":"US/Central",
+                                "format":"%Y-%m-%d %H:%M:%S",
+                                "on": "Date"}
+                        }
                 
         }
 

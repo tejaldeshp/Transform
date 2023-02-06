@@ -9,27 +9,36 @@ Call : df =
 
 import pandas as pd
 # params={
-# "dateCol":"",
-# "hourCol" :"",
-# "format":"",
-# "timezone":""
+# "dateCol":"DeliveryDate",
+# "hourCol" :"DeliveryHour",
+# "minCol" :"DeliveryInterval",
+# "format":"%m/%d/%Y",
+# "timezone":"US/Central",
+# "hour_replace":":00"
 # }
 
 
-def datetimeCombineMiso(df, params):
-    df[params["hourCol"]]= df[params["hourCol"]].replace("HE ","",regex=True)
-    df = df.astype({params["hourCol"]:"int"})
-    df[params["hourCol"]] -= 1
-    df[params["dateCol"]] = pd.to_datetime(df[params["dateCol"]]) + df[params["hourCol"]].astype("timedelta64[h]")
-    df.drop([params["hourCol"]], axis=1, inplace=True)
-    return df
+# def datetimeCombineMiso(df, params):
+#     df[params["hourCol"]]= df[params["hourCol"]].replace("HE ","",regex=True)
+#     df = df.astype({params["hourCol"]:"int"})
+#     df[params["hourCol"]] -= 1
+#     df[params["dateCol"]] = pd.to_datetime(df[params["dateCol"]]) + df[params["hourCol"]].astype("timedelta64[h]")
+#     df.drop([params["hourCol"]], axis=1, inplace=True)
+#     return df
 
 def datetimeCombineErcot(df, params):
+    print(params)
+    print(df)
     df[params["dateCol"]] = pd.to_datetime(df[params["dateCol"]], format=params["format"])
-    df[params["hourCol"]]= df[params["hourCol"]].replace(":00","",regex=True)
+    if params["hour_replace"]:
+        df[params["hourCol"]]= df[params["hourCol"]].replace(params["hour_replace"],"",regex=True)
     df = df.astype({params["hourCol"]:"int"})
     df[params["hourCol"]] -= 1
-    df[params["dateCol"]] = pd.to_datetime(df[params["dateCol"]]) + df[params["hourCol"]].astype("timedelta64[h]")
-    df.drop([params["hourCol"]], axis=1, inplace=True)
-    df[params["dateCol"]] = pd.to_datetime(df[params["dateCol"]].dt.tz_localize(params["timezone"], ambiguous=True))
+    if params["minCol"]:
+        df[params["minCol"]] = (df[params["minCol"]]*15) -15
+        df[params["dateCol"]] = pd.to_datetime(df[params["dateCol"]]) + df[params["hourCol"]].astype("timedelta64[h]")+df[params["minCol"]].astype("timedelta64[m]")
+        df.drop([params["hourCol"], params["minCol"]], axis=1, inplace=True)
+    else:
+        df[params["dateCol"]] = pd.to_datetime(df[params["dateCol"]]) + df[params["hourCol"]].astype("timedelta64[h]")
+        df.drop([params["hourCol"]], axis=1, inplace=True)
     return df
