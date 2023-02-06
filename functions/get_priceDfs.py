@@ -1,10 +1,19 @@
+"""
+This function returns the dataframes of 3 price files dam, rtm and ancillary based on input of date and node, 
+(mode represents S3 files or local files-DEBUG)
+Input: folder of iso, day, mode
+Output: DataFrames of dam, rtm and ancillary data of that day
+Call: damdf,rtmdf,ancillarydf = get_priceDfs(iso, date, mode="DEBUG")
+"""
+
+
 from functions.getfiles import *
 import json
 from datetime import datetime, timedelta
 import pandas as pd
 from dotenv import load_dotenv
-import io
 from qws.Q3.shared import *
+from functions.getS3filesdf import *
 
 
 def get_priceDfs(iso, day, mode):
@@ -53,41 +62,53 @@ def get_priceDfs(iso, day, mode):
         rtmS3path = [x for x in q3.list("us-ercot",iso_map["rtm"]["reportfolder"]+"/"+"%04d" %day.year+"/"+"%02d" % day.month+"/") if dateinstr in x]
         ancillaryS3path = [x for x in q3.list("us-ercot",iso_map["ancillary"]["reportfolder"]+"/"+"%04d" %day.year+"/"+"%02d" % day.month+"/") if damdateinstr in x]
 
-        #get dam files and convert to dataframe
-        dadfs = []
-        for path in damS3path:
-            l = path.replace("s3://", "").split("/")
-            path = "/".join(l[1:])
-            buffer = q3.download_file("us-ercot",path)
-            files = process_buff_zipfile(buffer)
-            for file in files:
-                dadfs.append(pd.read_csv(file))
-        damdf = pd.concat(dadfs)
+        # #get dam files and convert to dataframe
+        # dadfs = []
+        # for path in damS3path:
+        #     l = path.replace("s3://", "").split("/")
+        #     path = "/".join(l[1:])
+        #     buffer = q3.download_file("us-ercot",path)
+        #     files = process_buff_zipfile(buffer)
+        #     for file in files:
+        #         dadfs.append(pd.read_csv(file))
+        # damdf = pd.concat(dadfs)
+
+                 #or
+
+        damdf = getS3filesdf(damS3path)
         print(damdf)
 
 
-        #get rtm files and convert to dataframe
-        rtdfs = []
-        for path in rtmS3path:
-            l = path.replace("s3://", "").split("/")
-            path = "/".join(l[1:])
-            buffer = q3.download_file("us-ercot",path)
-            files = process_buff_zipfile(buffer)
-            for file in files:
-                rtdfs.append(pd.read_csv(file))
-        rtmdf = pd.concat(rtdfs)
+        # #get rtm files and convert to dataframe
+        # rtdfs = []
+        # for path in rtmS3path:
+        #     l = path.replace("s3://", "").split("/")
+        #     path = "/".join(l[1:])
+        #     buffer = q3.download_file("us-ercot",path)
+        #     files = process_buff_zipfile(buffer)
+        #     for file in files:
+        #         rtdfs.append(pd.read_csv(file))
+        # rtmdf = pd.concat(rtdfs)
+
+                #or
+
+        rtmdf = getS3filesdf(rtmS3path)
         print(rtmdf)
 
-        #get ancillary files and convert to dataframe
-        ancdfs = []
-        for path in ancillaryS3path:
-            l = path.replace("s3://", "").split("/")
-            path = "/".join(l[1:])
-            buffer = q3.download_file("us-ercot",path)
-            files = process_buff_zipfile(buffer)
-            for file in files:
-                ancdfs.append(pd.read_csv(file))
-        ancillarydf = pd.concat(ancdfs)
+        # #get ancillary files and convert to dataframe
+        # ancdfs = []
+        # for path in ancillaryS3path:
+        #     l = path.replace("s3://", "").split("/")
+        #     path = "/".join(l[1:])
+        #     buffer = q3.download_file("us-ercot",path)
+        #     files = process_buff_zipfile(buffer)
+        #     for file in files:
+        #         ancdfs.append(pd.read_csv(file))
+        # ancillarydf = pd.concat(ancdfs)
+
+                #or
+
+        ancillarydf = getS3filesdf(ancillaryS3path)
         print(ancillarydf)
 
     return damdf, rtmdf, ancillarydf

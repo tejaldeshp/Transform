@@ -8,7 +8,7 @@
                 "reportfolder":"00012331",
                 "node":"SettlementPoint",
                 "functions":{
-                        "datetimeCombineErcot" : {
+                        "datetimeCombine" : {
                                 "dateCol":"DeliveryDate",
                                 "hourCol" :"HourEnding",
                                 "format":"%m/%d/%Y",
@@ -26,7 +26,7 @@
         "ancillary":{
                 "reportfolder":"00012329",
                 "functions":{
-                        "datetimeCombineErcot" : {
+                        "datetimeCombine" : {
                                 "dateCol":"DeliveryDate",
                                 "hourCol" :"HourEnding",
                                 "format":"%m/%d/%Y",
@@ -51,7 +51,7 @@
                 "reportfolder":"00012301",
                 "node":"SettlementPointName",
                 "functions":{
-                        "datetimeCombineErcot" :{
+                        "datetimeCombine" :{
                                 "dateCol":"DeliveryDate",
                                 "hourCol" :"DeliveryHour",
                                 "minCol" :"DeliveryInterval",

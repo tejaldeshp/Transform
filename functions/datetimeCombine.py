@@ -14,7 +14,7 @@ import pandas as pd
 # "minCol" :"DeliveryInterval",
 # "format":"%m/%d/%Y",
 # "timezone":"US/Central",
-# "hour_replace":":00"
+# "hour_replace":""
 # }
 
 
@@ -26,9 +26,7 @@ import pandas as pd
 #     df.drop([params["hourCol"]], axis=1, inplace=True)
 #     return df
 
-def datetimeCombineErcot(df, params):
-    print(params)
-    print(df)
+def datetimeCombine(df, params):
     df[params["dateCol"]] = pd.to_datetime(df[params["dateCol"]], format=params["format"])
     if params["hour_replace"]:
         df[params["hourCol"]]= df[params["hourCol"]].replace(params["hour_replace"],"",regex=True)
