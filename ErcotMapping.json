@@ -1,7 +1,8 @@
 {
         "inputs":{
                 "iso": "ercot",
-                "bucketname" : "s3://us-ercot/" 
+                "bucketname" : "s3://us-ercot/",
+                "timezone" :"US/Central"
 
         },
         "dam" : {

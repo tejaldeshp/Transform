@@ -13,7 +13,6 @@ import pandas as pd
 # "hourCol" :"DeliveryHour",
 # "minCol" :"DeliveryInterval",
 # "format":"%m/%d/%Y",
-# "timezone":"US/Central",
 # "hour_replace":""
 # }
 

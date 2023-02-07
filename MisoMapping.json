@@ -1,0 +1,115 @@
+{
+    "inputs":{
+            "iso": "miso",
+            "bucketname" : "s3://us-miso/",
+            "timezone" :"EST"
+
+    },
+    "dam" : {
+            "reportfolder":"",
+            "node":"Node",
+            "functions":{
+                    "dfFilter":{
+                        "Value": ["LMP"]
+                      },
+                    "melt":{
+                        "id_vars":["Node","Type", "Value", "date"],
+                        "value_vars": ["HE 1","HE 2","HE 3","HE 4","HE 5","HE 6","HE 7","HE 8","HE 9","HE 10","HE 11","HE 12","HE 13","HE 14","HE 15","HE 16","HE 17","HE 18","HE 19",
+                        "HE 20","HE 21","HE 22","HE 23","HE 24"],
+                        "var_name":"hour",
+                        "value_name":"price"
+                        },
+                    "datetimeCombine" :{
+                        "dateCol":"date",
+                        "hourCol" :"hour",
+                        "minCol" :"",
+                        "format":"%Y/%m/%d",
+                        "hour_replace":"HE "
+                        },
+                    "dropCol" : ["Type","Value"],
+                    "renameCol" : {
+                        "Node" : "node",
+                        "price" : "px_da"
+                        }
+                    }
+    },
+    "ancillary":{
+            "reportfolder":"",
+            "functions":{
+                    "dfFilter":{
+                        "MCP Type" : ["GENREGMCP","GENSPINMCP","GENSUPPMCP"]
+                    },                    
+                    "melt":{
+                        "id_vars":["Unnamed: 0","MCP Type","date"],
+                        "value_vars": [" HE 1","HE 2","HE 3","HE 4","HE 5","HE 6","HE 7","HE 8","HE 9","HE 10","HE 11","HE 12","HE 13","HE 14","HE 15","HE 16","HE 17","HE 18","HE 19",
+                        "HE 20","HE 21","HE 22","HE 23","HE 24"],
+                        "var_name":"hour",
+                        "value_name":"price"
+                        },
+                    "datetimeCombine":{
+                        "dateCol":"date",
+                        "hourCol" :"hour",
+                        "minCol" :"",
+                        "format":"%Y/%m/%d",
+                        "hour_replace":"HE "
+                        },
+                    "pivot":{
+                        "values":["price"],
+                        "index": ["date","Unnamed: 0"],
+                        "columns": ["MCP Type"]
+                        },
+                    "addColsame":{
+                        "px_down":"GENREGMCP"
+                    },
+                    "renameCol":{
+                        "Unnamed: 0" : "node",
+                        "GENREGMCP" : "px_up",
+                        "GENSPINMCP" : "px_spin",
+                        "GENSUPPMCP" : "px_nspin"
+                        }
+            }
+    },
+    "rtm" : {
+            "reportfolder":"",
+            "node":"Node",
+            "functions":{
+                "dfFilter":{
+                    "Value": ["LMP"]
+                  },
+                "melt":{
+                    "id_vars":["Node","Type", "Value", "date"],
+                    "value_vars": ["HE 1","HE 2","HE 3","HE 4","HE 5","HE 6","HE 7","HE 8","HE 9","HE 10","HE 11","HE 12","HE 13","HE 14","HE 15","HE 16","HE 17","HE 18","HE 19",
+                    "HE 20","HE 21","HE 22","HE 23","HE 24"],
+                    "var_name":"hour",
+                    "value_name":"price"
+                    },
+                "datetimeCombine" :{
+                    "dateCol":"date",
+                    "hourCol" :"hour",
+                    "minCol" :"",
+                    "format":"%Y/%m/%d",
+                    "hour_replace":"HE "
+                    },
+                "dropCol" : ["Type","Value"],
+                "renameCol" : {
+                    "Node" : "node",
+                    "price" : "px_rt"
+                    }
+                    
+                }
+    },
+    
+    "output":{
+            "functions":{
+                    "resample":{
+                            "freq":"H",
+                            "function":"mean",
+                            "timezone":"",
+                            "format":"%Y-%m-%d %H:%M:%S",
+                            "on": "date"}
+                    }
+            
+    }
+
+}
+

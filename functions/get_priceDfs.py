@@ -18,7 +18,8 @@ from functions.getS3filesdf import *
 
 def get_priceDfs(iso, day, mode):
     mapfiles={
-        "ercot" : "ErcotMapping.json"
+        "ercot" : "ErcotMapping.json",
+        "miso" : "MisoMapping.json",
     }
 
     f = open(mapfiles[iso])
@@ -28,21 +29,39 @@ def get_priceDfs(iso, day, mode):
 
     if mode =="DEBUG":
         paths = {
-        "dam" : ["/home/tejaldeshpande/Desktop/DjangoProjects/Transform/TestFiles/rawfiles/damjan30_2022"],
-        "rtm" :["/home/tejaldeshpande/Desktop/DjangoProjects/Transform/TestFiles/rawfiles/rtmjan31_2022"],
-        "ancillary" :["/home/tejaldeshpande/Desktop/DjangoProjects/Transform/TestFiles/rawfiles/ancillaryjan30_2022"]
+            "ercot":{
+                "dam" : ["/home/tejaldeshpande/Desktop/DjangoProjects/Transform/TestFiles/ercot/rawfiles/damjan30_2022"],
+                "rtm" :["/home/tejaldeshpande/Desktop/DjangoProjects/Transform/TestFiles/ercot/rawfiles/rtmjan31_2022"],
+                "ancillary" :["/home/tejaldeshpande/Desktop/DjangoProjects/Transform/TestFiles/ercot/rawfiles/ancillaryjan30_2022"]
+        },
+            "miso":{
+                "dam" : "/home/tejaldeshpande/Desktop/DjangoProjects/Transform/TestFiles/miso/rawdata/20230101_da_expost_lmp.csv",
+                "rtm" : "/home/tejaldeshpande/Desktop/DjangoProjects/Transform/TestFiles/miso/rawdata/20230101_rt_lmp_final.csv",
+                "ancillary" : "/home/tejaldeshpande/Desktop/DjangoProjects/Transform/TestFiles/miso/rawdata/20230101_asm_expost_damcp.csv"
+            }
+
         }
 
-        # get files using unzip function for specified daterange 
-        dam = [get_csvfile_path(path) for path in (paths["dam"])]
-        rtm = [get_csvfile_path(path) for path in (paths["rtm"])]
-        ancillary = [get_csvfile_path(path) for path in (paths["ancillary"])] 
-        
-        #create dataframes from csv and concat all the files and get the data of specific node
-        damdf = pd.concat([pd.read_csv(i) for sublist in dam for i in sublist])
-        rtmdf = pd.concat([pd.read_csv(i) for sublist in rtm for i in sublist])
-        ancillarydf = pd.concat([pd.read_csv(i) for sublist in ancillary for i in sublist])
-        
+        if iso == "miso":
+            #create df from csv
+            damdf = pd.read_csv(paths["miso"]["dam"], skiprows=4)
+            rtmdf = pd.read_csv(paths["miso"]["rtm"], skiprows=4)
+            ancillarydf = pd.read_csv(paths["miso"]["ancillary"], skiprows=4)
+            damdf["date"] = day
+            rtmdf["date"] = day
+            ancillarydf["date"] = day
+
+        if iso == "ercot":
+            # get files using unzip function for specified daterange 
+            dam = [get_csvfile_path(path) for path in (paths["ercot"]["dam"])]
+            rtm = [get_csvfile_path(path) for path in (paths["ercot"]["rtm"])]
+            ancillary = [get_csvfile_path(path) for path in (paths["ercot"]["ancillary"])] 
+            
+            #create dataframes from csv and concat all the files 
+            damdf = pd.concat([pd.read_csv(i) for sublist in dam for i in sublist])
+            rtmdf = pd.concat([pd.read_csv(i) for sublist in rtm for i in sublist])
+            ancillarydf = pd.concat([pd.read_csv(i) for sublist in ancillary for i in sublist])
+    
     else: 
         day = datetime.strptime(day, "%Y-%m-%d")
         damday = day - timedelta(days=1)
